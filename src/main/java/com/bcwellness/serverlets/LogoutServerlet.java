@@ -12,11 +12,10 @@ import javax.servlet.http.HttpSession;
 public class LogoutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get current session
+        // Get the current session
         HttpSession session = request.getSession(false);
 
         if (session != null) {
@@ -24,11 +23,10 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
 
-        // Redirect to login page with success message
-        response.sendRedirect("login.jsp?message=logout_success");
+        // Redirect to login page
+        response.sendRedirect("index.jsp");
     }
 
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         doGet(request, response);

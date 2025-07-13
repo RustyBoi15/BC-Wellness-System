@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,96 +19,98 @@ import javax.servlet.http.HttpSession;
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // Database connection details
+    // Database connection parameters
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/bc_wellness";
-    private static final String DB_USERNAME = "postgres"; // Change to your DB username
-    private static final String DB_PASSWORD = "password"; // Change to your DB password
+    private static final String DB_USER = "postgres";
+    private static final String DB_PASSWORD = "password";
 
-    @Override
+    static {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String rememberMe = request.getParameter("rememberMe");
+
+        // Server-side validation
+        if (username == null || username.trim().isEmpty() ||
+                password == null || password.trim().isEmpty()) {
+
+            request.setAttribute("errorMessage", "Please enter both username and password.");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+            return;
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
         try {
-            // Load PostgreSQL driver
-            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 
-            // Connect to database
-            try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            // Check login credentials (username can be student_number or email)
+            String query = "SELECT student_number, name, surname, email, phone FROM users WHERE (student_number = ? OR email = ?) AND password = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, username);
+            stmt.setString(2, username);
+            stmt.setString(3, hashPassword(password));
 
-                // Check if user exists with username or email
-                String sql = "SELECT student_number, first_name, last_name, email, password_hash " +
-                        "FROM students WHERE student_number = ? OR email = ?";
+            rs = stmt.executeQuery();
 
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setString(1, username);
-                    stmt.setString(2, username);
+            if (rs.next()) {
+                // Login successful - create session
+                HttpSession session = request.getSession();
+                session.setAttribute("studentNumber", rs.getString("student_number"));
+                session.setAttribute("studentName", rs.getString("name") + " " + rs.getString("surname"));
+                session.setAttribute("studentEmail", rs.getString("email"));
+                session.setAttribute("studentPhone", rs.getString("phone"));
+                session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
-                    ResultSet rs = stmt.executeQuery();
-
-                    if (rs.next()) {
-                        String storedPasswordHash = rs.getString("password_hash");
-                        String inputPasswordHash = hashPassword(password);
-
-                        if (storedPasswordHash.equals(inputPasswordHash)) {
-                            // Login successful
-                            HttpSession session = request.getSession();
-                            session.setAttribute("studentNumber", rs.getString("student_number"));
-                            session.setAttribute("studentName", rs.getString("first_name") + " " + rs.getString("last_name"));
-                            session.setAttribute("studentEmail", rs.getString("email"));
-
-                            // Set session timeout (30 minutes)
-                            session.setMaxInactiveInterval(30 * 60);
-
-                            // Handle remember me functionality
-                            if ("on".equals(rememberMe)) {
-                                session.setMaxInactiveInterval(7 * 24 * 60 * 60); // 7 days
-                            }
-
-                            response.sendRedirect("dashboard.jsp");
-                        } else {
-                            // Invalid password
-                            request.setAttribute("errorMessage", "Invalid username or password");
-                            request.getRequestDispatcher("login.jsp").forward(request, response);
-                        }
-                    } else {
-                        // User not found
-                        request.setAttribute("errorMessage", "Invalid username or password");
-                        request.getRequestDispatcher("login.jsp").forward(request, response);
-                    }
-                }
+                // Redirect to dashboard
+                response.sendRedirect("dashboard.jsp");
+            } else {
+                // Login failed
+                request.setAttribute("errorMessage", "Invalid username or password.");
+                request.getRequestDispatcher("index.jsp").forward(request, response);
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            request.setAttribute("errorMessage", "Database driver not found");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+
         } catch (SQLException e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Database connection error");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } catch (NoSuchAlgorithmException e) {
+            request.setAttribute("errorMessage", "Database error: " + e.getMessage());
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Password encryption error");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "An error occurred during login. Please try again.");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] hash = md.digest(password.getBytes());
-        StringBuilder hexString = new StringBuilder();
-
-        for (byte b : hash) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) {
-                hexString.append('0');
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashedBytes) {
+                sb.append(String.format("%02x", b));
             }
-            hexString.append(hex);
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return password; // Fallback to plain text (not recommended for production)
         }
-
-        return hexString.toString();
     }
 }

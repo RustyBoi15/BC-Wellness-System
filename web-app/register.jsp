@@ -89,15 +89,21 @@
             font-size: 14px;
             margin-bottom: 15px;
             text-align: center;
+            padding: 10px;
+            border-radius: 5px;
             display: none;
         }
 
         .server-message.error {
-            color: red;
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
         }
 
         .server-message.success {
-            color: green;
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
         }
 
         .back-link {
@@ -188,7 +194,7 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <div class="password-requirements">
-                Password must be at least 8 characters with uppercase, lowercase, number, and special character
+                Password must be at least 6 characters long
             </div>
             <div id="passwordError" class="error"></div>
         </div>
@@ -203,8 +209,8 @@
     </form>
 
     <div class="back-link">
-        <a href="index.jsp">Back to Home</a> |
-        <a href="login.jsp">Already have an account? Login</a>
+        <a href="index.jsp">Back to Login</a> |
+        <a href="index.jsp">Already have an account? Login</a>
     </div>
 </div>
 
@@ -259,10 +265,9 @@
             isValid = false;
         }
 
-        // Password validation
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordRegex.test(password)) {
-            showError('passwordError', 'Password must be at least 8 characters with uppercase, lowercase, number, and special character');
+        // Password validation - simplified for students
+        if (password.length < 6) {
+            showError('passwordError', 'Password must be at least 6 characters long');
             isValid = false;
         }
 
