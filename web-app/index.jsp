@@ -1,160 +1,211 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BC Student Wellness Management System</title>
+    <title>Login - BC Student Wellness</title>
     <style>
-        * {
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #f4f4f4;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 3rem;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
+            max-width: 400px;
+            margin: 80px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 50%;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
             font-weight: bold;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-size: 2.2rem;
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
         }
 
-        .subtitle {
-            color: #666;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 1rem;
-            flex-direction: column;
+        input:focus {
+            outline: none;
+            border-color: #007bff;
         }
 
         .btn {
-            padding: 1rem 2rem;
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            display: inline-block;
+            margin-top: 10px;
         }
 
-        .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+        .btn:hover {
+            background-color: #0056b3;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
         }
 
-        .btn-secondary {
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
+        .server-error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
         }
 
-        .btn-secondary:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
+        .back-link {
+            text-align: center;
+            margin-top: 25px;
         }
 
-        .features {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #eee;
+        .back-link a {
+            color: #007bff;
+            text-decoration: none;
         }
 
-        .features h3 {
-            color: #333;
-            margin-bottom: 1rem;
+        .back-link a:hover {
+            text-decoration: underline;
         }
 
-        .feature-list {
-            color: #666;
-            text-align: left;
-            list-style: none;
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .feature-list li {
-            padding: 0.5rem 0;
-            position: relative;
-            padding-left: 1.5rem;
+        .remember-me input {
+            width: auto;
+            margin-right: 8px;
         }
 
-        .feature-list li:before {
-            content: "✓";
-            color: #667eea;
-            font-weight: bold;
-            position: absolute;
-            left: 0;
-        }
-
-        @media (min-width: 768px) {
-            .buttons {
-                flex-direction: row;
+        @media (max-width: 480px) {
+            .container {
+                margin: 40px 20px;
+                padding: 30px 20px;
             }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="logo">BC</div>
-    <h1>Welcome to BC Wellness</h1>
-    <p class="subtitle">Your gateway to mental health and wellness support</p>
+    <h2>Student Login</h2>
 
-    <div class="buttons">
-        <a href="login.jsp" class="btn btn-primary">Login</a>
-        <a href="register.jsp" class="btn btn-secondary">Register</a>
+    <!-- Server Error Message -->
+    <%
+        String errorMessage = (String) request.getAttribute("errorMessage");
+        if (errorMessage == null) {
+            errorMessage = "";
+        }
+    %>
+    <div id="serverError" class="server-error">
+        <% if (!errorMessage.isEmpty()) { %>
+        <%= errorMessage %>
+        <% } %>
     </div>
 
-    <div class="features">
-        <h3>What We Offer</h3>
-        <ul class="feature-list">
-            <li>Schedule counseling appointments</li>
-            <li>Access to qualified counselors</li>
-            <li>Share feedback and experiences</li>
-            <li>Secure and confidential platform</li>
-        </ul>
+    <form id="loginForm" method="post" action="LoginServlet">
+        <div class="form-group">
+            <label for="username">Student Number or Email:</label>
+            <input type="text" id="username" name="username" required>
+            <div id="usernameError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <div id="passwordError" class="error"></div>
+        </div>
+
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe" name="rememberMe">
+            <label for="rememberMe">Remember me</label>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+    </form>
+
+    <div class="back-link">
+        <a href="index.jsp">Back to Home</a> |
+        <a href="register.jsp">Don't have an account? Register</a>
     </div>
 </div>
+
+<script>
+    // Form validation
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Clear previous error messages
+        document.querySelectorAll('.error').forEach(function(el) {
+            el.style.display = 'none';
+        });
+
+        // Get form values
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        // Username validation
+        if (username.length < 3) {
+            showError('usernameError', 'Please enter your student number or email');
+            isValid = false;
+        }
+
+        // Password validation
+        if (password.length < 1) {
+            showError('passwordError', 'Please enter your password');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    // Show server error message if exists
+    window.onload = function() {
+        const serverError = document.getElementById('serverError');
+        if (serverError.textContent.trim()) {
+            serverError.style.display = 'block';
+        }
+    };
+</script>
 </body>
 </html>

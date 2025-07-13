@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*" %>
 <%
     // Check if user is logged in
     if (session.getAttribute("studentName") == null) {
@@ -8,11 +9,16 @@
 
     String studentName = (String) session.getAttribute("studentName");
     String studentNumber = (String) session.getAttribute("studentNumber");
+
+    // Ensure variables are not null
+    if (studentName == null) studentName = "Student";
+    if (studentNumber == null) studentNumber = "N/A";
 %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - BC Student Wellness</title>
     <style>
         body {
@@ -162,6 +168,22 @@
             color: #666;
             font-size: 14px;
         }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -202,42 +224,42 @@
             <div class="service-icon">📅</div>
             <h3 class="service-title">Book Appointment</h3>
             <p class="service-description">Schedule a session with our professional counselors at your convenience.</p>
-            <a href="#" class="service-btn">Book Now</a>
+            <a href="javascript:void(0)" class="service-btn" onclick="showFeatureAlert()">Book Now</a>
         </div>
 
         <div class="service-card">
             <div class="service-icon">👥</div>
             <h3 class="service-title">View Counselors</h3>
             <p class="service-description">Browse our team of qualified counselors and their specializations.</p>
-            <a href="#" class="service-btn">View Counselors</a>
+            <a href="javascript:void(0)" class="service-btn" onclick="showFeatureAlert()">View Counselors</a>
         </div>
 
         <div class="service-card">
             <div class="service-icon">⏰</div>
             <h3 class="service-title">My Appointments</h3>
             <p class="service-description">View, reschedule, or cancel your upcoming appointments.</p>
-            <a href="#" class="service-btn">View Appointments</a>
+            <a href="javascript:void(0)" class="service-btn" onclick="showFeatureAlert()">View Appointments</a>
         </div>
 
         <div class="service-card">
             <div class="service-icon">💬</div>
             <h3 class="service-title">Feedback</h3>
             <p class="service-description">Share your experience and help us improve our services.</p>
-            <a href="#" class="service-btn">Give Feedback</a>
+            <a href="javascript:void(0)" class="service-btn" onclick="showFeatureAlert()">Give Feedback</a>
         </div>
 
         <div class="service-card">
             <div class="service-icon">📊</div>
             <h3 class="service-title">Wellness Report</h3>
             <p class="service-description">Track your wellness progress and view your activity history.</p>
-            <a href="#" class="service-btn">View Report</a>
+            <a href="javascript:void(0)" class="service-btn" onclick="showFeatureAlert()">View Report</a>
         </div>
 
         <div class="service-card">
             <div class="service-icon">🆘</div>
             <h3 class="service-title">Emergency Support</h3>
             <p class="service-description">Access immediate help and crisis support resources.</p>
-            <a href="#" class="service-btn">Get Help</a>
+            <a href="javascript:void(0)" class="service-btn" onclick="showFeatureAlert()">Get Help</a>
         </div>
     </div>
 </div>
@@ -250,13 +272,10 @@
         }
     });
 
-    // Service card interactions
-    document.querySelectorAll('.service-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('This feature will be available in the desktop application (Milestone 2)');
-        });
-    });
+    // Service feature alert
+    function showFeatureAlert() {
+        alert('This feature will be available in the desktop application (Milestone 2)');
+    }
 </script>
 </body>
 </html>

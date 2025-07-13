@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - BC Student Wellness</title>
     <style>
         body {
@@ -83,6 +85,21 @@
             display: none;
         }
 
+        .server-message {
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .server-message.error {
+            color: red;
+        }
+
+        .server-message.success {
+            color: green;
+        }
+
         .back-link {
             text-align: center;
             margin-top: 20px;
@@ -102,6 +119,13 @@
             color: #666;
             margin-top: 5px;
         }
+
+        @media (max-width: 580px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -112,22 +136,22 @@
     <%
         String successMessage = (String) request.getAttribute("successMessage");
         String errorMessage = (String) request.getAttribute("errorMessage");
-    %>
-    <div id="successMessage" class="success">
-        <%
-            if (successMessage != null) {
-                out.print(successMessage);
-            }
-        %>
-    </div>
 
-    <div id="errorMessage" class="error">
-        <%
-            if (errorMessage != null) {
-                out.print(errorMessage);
-            }
-        %>
+        if (successMessage == null) successMessage = "";
+        if (errorMessage == null) errorMessage = "";
+    %>
+
+    <% if (!successMessage.isEmpty()) { %>
+    <div id="successMessage" class="server-message success">
+        <%= successMessage %>
     </div>
+    <% } %>
+
+    <% if (!errorMessage.isEmpty()) { %>
+    <div id="errorMessage" class="server-message error">
+        <%= errorMessage %>
+    </div>
+    <% } %>
 
     <form id="registerForm" method="post" action="RegisterServlet">
         <div class="form-group">
@@ -190,7 +214,9 @@
         let isValid = true;
 
         // Clear previous error messages
-        document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.error').forEach(function(el) {
+            el.style.display = 'none';
+        });
 
         // Get form values
         const studentNumber = document.getElementById('studentNumber').value.trim();
@@ -262,13 +288,14 @@
         const successMsg = document.getElementById('successMessage');
         const errorMsg = document.getElementById('errorMessage');
 
-        if (successMsg.textContent.trim()) {
+        if (successMsg && successMsg.textContent.trim()) {
             successMsg.style.display = 'block';
         }
 
-        if (errorMsg.textContent.trim()) {
+        if (errorMsg && errorMsg.textContent.trim()) {
             errorMsg.style.display = 'block';
         }
     };
 </script>
 </body>
+</html>
