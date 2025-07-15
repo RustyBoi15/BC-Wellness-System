@@ -45,7 +45,7 @@ public class MainDashboard extends javax.swing.JFrame {
         jLabelDate = new javax.swing.JLabel();
         jLabelTime = new javax.swing.JLabel();
         jTextFieldStuID = new javax.swing.JTextField();
-        jTextFieldCouncel = new javax.swing.JTextField();
+        jTextFieldCounsel = new javax.swing.JTextField();
         jTextFieldDate = new javax.swing.JTextField();
         jTextFieldTime = new javax.swing.JTextField();
         btnBook = new javax.swing.JButton();
@@ -134,7 +134,7 @@ public class MainDashboard extends javax.swing.JFrame {
                                     .addComponent(jLabelTime))
                                 .addGap(35, 35, 35)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextFieldCouncel)
+                                    .addComponent(jTextFieldCounsel)
                                     .addComponent(jTextFieldDate)
                                     .addComponent(jTextFieldTime)))
                             .addGroup(layout.createSequentialGroup()
@@ -164,7 +164,7 @@ public class MainDashboard extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelCounsel)
-                            .addComponent(jTextFieldCouncel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jTextFieldCounsel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelDate)
@@ -192,15 +192,15 @@ public class MainDashboard extends javax.swing.JFrame {
         return jTextFieldStuID;
     }
 
-    public JTextField getjTextFieldCouncel() {
-        return jTextFieldCouncel;
+    public JTextField getCounselField() {
+        return jTextFieldCounsel;
     }
 
-    public JTextField getjTextFieldDate() {
+    public JTextField getDateField() {
         return jTextFieldDate;
     }
 
-    public JTextField getjTextFieldTime() {
+    public JTextField getTimeField() {
         return jTextFieldTime;
     }
 
@@ -260,7 +260,7 @@ public class MainDashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextFieldCouncel;
+    private javax.swing.JTextField jTextFieldCounsel;
     private javax.swing.JTextField jTextFieldDate;
     private javax.swing.JTextField jTextFieldStuID;
     private javax.swing.JTextField jTextFieldTime;
